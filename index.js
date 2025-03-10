@@ -2,13 +2,13 @@ const express = require('express');
 const mysql = require('mysql');
 const dotenv = require('dotenv');
 
-// Charger les variables d'environnement
+// Load environment variables
 dotenv.config({ path: `./.env/${process.env.ENV}.env` });
 
 const app = express();
 const port = 4000;
 
-// Configurer la connexion à la base de données
+// Configure the database connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -16,21 +16,34 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME,
 });
 
-// Connecter à la base de données
+// Connect to the database
 db.connect((err) => {
     if (err) {
-        console.error('Erreur de connexion à la base de données:', err);
+        console.error('Database connection error:', err);
         return;
     }
-    console.log('Connecté à la base de données MySQL');
+    console.log('Connected to the MySQL database');
 });
 
-// Définir une route de base
+// Define a route to fetch data from the database
+app.get('/data', (req, res) => {
+    const query = 'SELECT * FROM database'; // Replace 'your_table_name' with your actual table name
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching data:', err);
+            res.status(500).send('Server error');
+            return;
+        }
+        res.json(results);
+    });
+});
+
+// Define a base route
 app.get('/', (req, res) => {
     res.send('Hello API');
 });
 
-// Démarrer le serveur
+// Start the server
 app.listen(port, () => {
-    console.log(`Serveur API en cours d'exécution sur le port ${port}`);
+    console.log(`API server running on port ${port}`);
 });
