@@ -1,19 +1,15 @@
 const express = require('express');
 const mysql = require('mysql');
-const dotenv = require('dotenv');
-
-// Load environment variables
-dotenv.config({ path: `./.env/${process.env.ENV}.env` });
 
 const app = express();
-const port = 4000;
+const port = 3000;
 
 // Configure the database connection
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    host: process.env.URL,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: 'database',
 });
 
 // Connect to the database
@@ -27,7 +23,7 @@ db.connect((err) => {
 
 // Define a route to fetch data from the database
 app.get('/data', (req, res) => {
-    const query = 'SELECT * FROM database';
+    const query = 'SELECT username, createdAt, updatedAt FROM users';
     db.query(query, (err, results) => {
         if (err) {
             console.error('Error fetching data:', err);
